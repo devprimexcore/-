@@ -1,159 +1,77 @@
-// Crypto Engine by primexcore 🔒
-// Core functions for Encoding & Decoding
+// script.js — No-Emoji, Clean UI Version
 
-// ===========================
-// Base64
-// ===========================
-function encodeBase64(input) {
-  return btoa(unescape(encodeURIComponent(input)));
-}
-function decodeBase64(input) {
-  return decodeURIComponent(escape(atob(input)));
-}
+const inputArea = document.getElementById("inputText");
+const methodSelect = document.getElementById("methodSelect");
+const runBtn = document.getElementById("runBtn");
+const resultBox = document.getElementById("resultBox");
+const resultText = document.getElementById("resultText");
+const copyBtn = document.getElementById("copyBtn");
+const lastResult = document.getElementById("lastResult");
+const statusIcon = document.getElementById("statusIcon"); // New
 
-// ===========================
-// ROT13
-// ===========================
-function rot13(input) {
-  return input.replace(/[a-zA-Z]/g, c =>
-    String.fromCharCode(
-      c.charCodeAt(0) + (c.toLowerCase() < 'n' ? 13 : -13)
-    )
-  );
+function detectEncoding(str) {
+    if (/^[A-Za-z0-9+/=]{10,}$/.test(str)) return "Base64 Decode";
+    if (/^([0-9a-f]{2})+$/i.test(str.replace(/\s/g, ""))) return "Hex Decode";
+    if (/^([01]{8}\s*)+$/.test(str.trim())) return "Binary Decode";
+    if (/^(https?|%[0-9A-F]{2})/.test(str)) return "URL Decode";
+    return null;
 }
 
-// ===========================
-// Caesar Cipher
-// ===========================
-function caesarEncrypt(text, shift = 3) {
-  return text.replace(/[a-z]/gi, c =>
-    String.fromCharCode(
-      ((c.charCodeAt(0) - (c.toLowerCase() < 'a' ? 65 : 97) + shift) % 26) +
-      (c.toLowerCase() < 'a' ? 65 : 97)
-    )
-  );
-}
-function caesarDecrypt(text, shift = 3) {
-  return caesarEncrypt(text, 26 - shift);
+function showResult(text) {
+    resultText.textContent = text;
+    resultBox.classList.add("show");
+    lastResult.style.display = "block";
+    localStorage.setItem("lastInput", inputArea.value);
+    localStorage.setItem("lastOutput", text);
 }
 
-// ===========================
-// Hex Encode / Decode
-// ===========================
-function encodeHex(input) {
-  return [...input].map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
-}
-function decodeHex(hex) {
-  return hex.match(/.{1,2}/g).map(h => String.fromCharCode(parseInt(h, 16))).join('');
-}
+copyBtn.addEventListener("click", () => {
+    navigator.clipboard.writeText(resultText.textContent);
+    copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-check" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414L8.414 15l-4.121-4.121a1 1 0 011.414-1.414L8.414 12.172l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg> Copied`;
+    setTimeout(() => {
+        copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="9" y="9" width="13" height="13" rx="2" />
+            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+        </svg> Copy`;
+    }, 1500);
+});
 
-// ===========================
-// Binary Encode / Decode
-// ===========================
-function encodeBinary(input) {
-  return input.split('').map(c => c.charCodeAt(0).toString(2).padStart(8, '0')).join(' ');
-}
-function decodeBinary(binary) {
-  return binary.split(' ').map(b => String.fromCharCode(parseInt(b, 2))).join('');
-}
+runBtn.addEventListener("click", () => {
+    const input = inputArea.value.trim();
+    let selected = methodSelect.value;
 
-// ===========================
-// Morse Code
-// ===========================
-const morse = {
-  A: '.-', B: '-...', C: '-.-.', D: '-..',
-  E: '.', F: '..-.', G: '--.', H: '....',
-  I: '..', J: '.---', K: '-.-', L: '.-..',
-  M: '--', N: '-.', O: '---', P: '.--.',
-  Q: '--.-', R: '.-.', S: '...', T: '-',
-  U: '..-', V: '...-', W: '.--', X: '-..-',
-  Y: '-.--', Z: '--..',
-  0: '-----', 1: '.----', 2: '..---', 3: '...--',
-  4: '....-', 5: '.....', 6: '-....', 7: '--...',
-  8: '---..', 9: '----.',
-  ' ': '/', '.': '.-.-.-', ',': '--..--'
-};
-const reverseMorse = Object.fromEntries(Object.entries(morse).map(([k, v]) => [v, k]));
-
-function encodeMorse(input) {
-  return input.toUpperCase().split('').map(c => morse[c] || '').join(' ');
-}
-function decodeMorse(code) {
-  return code.split(' ').map(symbol => reverseMorse[symbol] || '').join('');
-}
-
-// ===========================
-// URL Encode / Decode
-// ===========================
-function encodeURL(input) {
-  return encodeURIComponent(input);
-}
-function decodeURL(input) {
-  return decodeURIComponent(input);
-}
-
-// ===========================
-// Simple XOR Encrypt / Decrypt
-// ===========================
-function xorEncrypt(input, key = 'k') {
-  return [...input].map((c, i) =>
-    String.fromCharCode(c.charCodeAt(0) ^ key.charCodeAt(i % key.length))
-  ).join('');
-}
-
-// ===========================
-// Hash Functions using SubtleCrypto
-// ===========================
-async function hashSHA256(message) {
-  const msgBuffer = new TextEncoder().encode(message);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-  return [...new Uint8Array(hashBuffer)].map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-// ===========================
-// UI Handling
-// ===========================
-async function process(mode) {
-  const input = document.getElementById('input').value;
-  const algo = document.getElementById('algorithm').value;
-  const output = document.getElementById('output');
-  let result = '';
-
-  try {
-    switch (algo) {
-      case 'base64':
-        result = mode === 'encode' ? encodeBase64(input) : decodeBase64(input);
-        break;
-      case 'rot13':
-        result = rot13(input);
-        break;
-      case 'caesar':
-        result = mode === 'encode' ? caesarEncrypt(input, 5) : caesarDecrypt(input, 5);
-        break;
-      case 'hex':
-        result = mode === 'encode' ? encodeHex(input) : decodeHex(input);
-        break;
-      case 'binary':
-        result = mode === 'encode' ? encodeBinary(input) : decodeBinary(input);
-        break;
-      case 'morse':
-        result = mode === 'encode' ? encodeMorse(input) : decodeMorse(input);
-        break;
-      case 'url':
-        result = mode === 'encode' ? encodeURL(input) : decodeURL(input);
-        break;
-      case 'xor':
-        result = xorEncrypt(input, 'p');
-        break;
-      case 'sha256':
-        result = await hashSHA256(input);
-        break;
-      default:
-        result = 'Unknown algorithm.';
+    if (!input) {
+        statusIcon.innerHTML = `<svg class="icon icon-alert" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M8.257 3.099c.765-1.36 2.72-1.36 3.485 0l6.518 11.607c.75 1.335-.213 2.994-1.742 2.994H3.48c-1.53 0-2.492-1.659-1.743-2.994L8.257 3.1zM9 13h2v2H9v-2zm0-6h2v4H9V7z" /></svg>`;
+        alert("Please enter text to process.");
+        return;
     }
-  } catch (e) {
-    result = `Error: ${e.message}`;
-  }
 
-  output.value = result;
-                                                                   }
+    if (selected === "Auto Detect") {
+        const detected = detectEncoding(input);
+        if (detected) {
+            selected = detected;
+            methodSelect.value = detected;
+        } else {
+            statusIcon.innerHTML = `<svg class="icon icon-warning" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M21.5 19.5l-9-15-9 15h18z" stroke="currentColor" stroke-width="2"/></svg>`;
+            alert("Unable to detect format.");
+            return;
+        }
+    }
+
+    try {
+        const methodFn = EncryptionMethods[selected];
+        const output = methodFn(input);
+        statusIcon.innerHTML = `<svg class="icon icon-success" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="green"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>`;
+        showResult(output);
+    } catch (e) {
+        statusIcon.innerHTML = `<svg class="icon icon-error" xmlns="http://www.w3.org/2000/svg" fill="red" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-5h2v2H9v-2zm0-6h2v4H9V7z" /></svg>`;
+        showResult(`[Error] ${e.message}`);
+    }
+});
+
+window.addEventListener("DOMContentLoaded", () => {
+    const savedInput = localStorage.getItem("lastInput");
+    const savedOutput = localStorage.getItem("lastOutput");
+    if (savedInput) inputArea.value = savedInput;
+    if (savedOutput) showResult(savedOutput);
+});
