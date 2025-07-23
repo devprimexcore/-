@@ -80,6 +80,8 @@ textarea:focus, input:focus, select:focus {
   border: 1px solid #00f2ff;
   box-shadow: 0 0 5px #00f2ff;
 }
+
+/* ============ Buttons ============ */
 button {
   margin-top: 1.2rem;
   padding: 0.8rem 1.5rem;
@@ -95,6 +97,25 @@ button {
 button:hover {
   background-color: #00b7cc;
   box-shadow: 0 0 10px #00f2ff;
+}
+
+.copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #00c7f7;
+  color: #000;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+}
+.copy-btn i {
+  font-size: 1.1rem;
+}
+.copy-btn:hover {
+  background-color: #00a5cc;
+  box-shadow: 0 0 10px #00e2ff;
 }
 
 /* ============ Footer ============ */
@@ -116,10 +137,10 @@ footer {
   .section h2 {
     font-size: 1.2rem;
   }
-  button {
+  button, .copy-btn {
     font-size: 0.9rem;
   }
   textarea, input, select {
     font-size: 0.9rem;
   }
-    }
+  }
