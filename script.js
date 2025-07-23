@@ -1,77 +1,143 @@
-// script.js — No-Emoji, Clean UI Version
+// ========== GLOBAL ELEMENTS ==========
+const modeSelect = document.getElementById('mode');
+const encodeBtn = document.getElementById('encode-btn');
+const decodeBtn = document.getElementById('decode-btn');
+const inputArea = document.getElementById('input-text');
+const outputArea = document.getElementById('output-text');
+const copyBtn = document.getElementById('copy-btn');
+const statusMsg = document.getElementById('status');
+const loader = document.getElementById('loader');
 
-const inputArea = document.getElementById("inputText");
-const methodSelect = document.getElementById("methodSelect");
-const runBtn = document.getElementById("runBtn");
-const resultBox = document.getElementById("resultBox");
-const resultText = document.getElementById("resultText");
-const copyBtn = document.getElementById("copyBtn");
-const lastResult = document.getElementById("lastResult");
-const statusIcon = document.getElementById("statusIcon"); // New
-
-function detectEncoding(str) {
-    if (/^[A-Za-z0-9+/=]{10,}$/.test(str)) return "Base64 Decode";
-    if (/^([0-9a-f]{2})+$/i.test(str.replace(/\s/g, ""))) return "Hex Decode";
-    if (/^([01]{8}\s*)+$/.test(str.trim())) return "Binary Decode";
-    if (/^(https?|%[0-9A-F]{2})/.test(str)) return "URL Decode";
-    return null;
+// ========== UTILITIES ==========
+function showStatus(message, type = 'info') {
+  statusMsg.textContent = message;
+  statusMsg.style.color = type === 'error' ? '#ff4d4d' : '#00f2ff';
 }
 
-function showResult(text) {
-    resultText.textContent = text;
-    resultBox.classList.add("show");
-    lastResult.style.display = "block";
-    localStorage.setItem("lastInput", inputArea.value);
-    localStorage.setItem("lastOutput", text);
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-copyBtn.addEventListener("click", () => {
-    navigator.clipboard.writeText(resultText.textContent);
-    copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-check" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414L8.414 15l-4.121-4.121a1 1 0 011.414-1.414L8.414 12.172l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg> Copied`;
-    setTimeout(() => {
-        copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="9" y="9" width="13" height="13" rx="2" />
-            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-        </svg> Copy`;
-    }, 1500);
-});
+function showLoader(show = true) {
+  loader.style.display = show ? 'inline-block' : 'none';
+}
 
-runBtn.addEventListener("click", () => {
-    const input = inputArea.value.trim();
-    let selected = methodSelect.value;
+function copyToClipboard() {
+  if (outputArea.value.trim() === '') {
+    showStatus('Output is empty.', 'error');
+    return;
+  }
+  outputArea.select();
+  document.execCommand('copy');
+  showStatus('Copied to clipboard ✅');
+}
 
-    if (!input) {
-        statusIcon.innerHTML = `<svg class="icon icon-alert" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M8.257 3.099c.765-1.36 2.72-1.36 3.485 0l6.518 11.607c.75 1.335-.213 2.994-1.742 2.994H3.48c-1.53 0-2.492-1.659-1.743-2.994L8.257 3.1zM9 13h2v2H9v-2zm0-6h2v4H9V7z" /></svg>`;
-        alert("Please enter text to process.");
-        return;
+// ========== CORE ALGORITHMS ==========
+function base64Encode(str) {
+  return btoa(unescape(encodeURIComponent(str)));
+}
+function base64Decode(str) {
+  try {
+    return decodeURIComponent(escape(atob(str)));
+  } catch {
+    throw new Error('Invalid Base64');
+  }
+}
+
+function rot13(str) {
+  return str.replace(/[a-zA-Z]/g, c =>
+    String.fromCharCode(
+      c.charCodeAt(0) + (c.toLowerCase() < 'n' ? 13 : -13)
+    )
+  );
+}
+
+function reverse(str) {
+  return str.split('').reverse().join('');
+}
+
+function hexEncode(str) {
+  return str.split('').map(c => c.charCodeAt(0).toString(16)).join('');
+}
+function hexDecode(hex) {
+  return hex.match(/.{1,2}/g).map(byte => String.fromCharCode(parseInt(byte, 16))).join('');
+}
+
+function binaryEncode(str) {
+  return str.split('').map(c => c.charCodeAt(0).toString(2).padStart(8, '0')).join(' ');
+}
+function binaryDecode(bin) {
+  return bin.split(' ').map(b => String.fromCharCode(parseInt(b, 2))).join('');
+}
+
+// ========== ACTIONS ==========
+async function encodeHandler() {
+  const mode = modeSelect.value;
+  const input = inputArea.value.trim();
+  if (!input) return showStatus('Please enter some text.', 'error');
+
+  showLoader(true);
+  await sleep(600);
+  let result;
+  try {
+    switch (mode) {
+      case 'base64': result = base64Encode(input); break;
+      case 'rot13': result = rot13(input); break;
+      case 'reverse': result = reverse(input); break;
+      case 'hex': result = hexEncode(input); break;
+      case 'binary': result = binaryEncode(input); break;
+      default: throw new Error('Unsupported encoding method');
     }
+    outputArea.value = result;
+    showStatus('Encoding successful ✅');
+  } catch (e) {
+    showStatus(e.message, 'error');
+  }
+  showLoader(false);
+}
 
-    if (selected === "Auto Detect") {
-        const detected = detectEncoding(input);
-        if (detected) {
-            selected = detected;
-            methodSelect.value = detected;
-        } else {
-            statusIcon.innerHTML = `<svg class="icon icon-warning" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M21.5 19.5l-9-15-9 15h18z" stroke="currentColor" stroke-width="2"/></svg>`;
-            alert("Unable to detect format.");
-            return;
-        }
+async function decodeHandler() {
+  const mode = modeSelect.value;
+  const input = inputArea.value.trim();
+  if (!input) return showStatus('Please paste encoded text.', 'error');
+
+  showLoader(true);
+  await sleep(600);
+  let result;
+  try {
+    switch (mode) {
+      case 'base64': result = base64Decode(input); break;
+      case 'rot13': result = rot13(input); break;
+      case 'reverse': result = reverse(input); break;
+      case 'hex': result = hexDecode(input); break;
+      case 'binary': result = binaryDecode(input); break;
+      default: throw new Error('Unsupported decoding method');
     }
+    outputArea.value = result;
+    showStatus('Decoding successful ✅');
+  } catch (e) {
+    showStatus(e.message, 'error');
+  }
+  showLoader(false);
+}
 
-    try {
-        const methodFn = EncryptionMethods[selected];
-        const output = methodFn(input);
-        statusIcon.innerHTML = `<svg class="icon icon-success" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="green"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>`;
-        showResult(output);
-    } catch (e) {
-        statusIcon.innerHTML = `<svg class="icon icon-error" xmlns="http://www.w3.org/2000/svg" fill="red" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-5h2v2H9v-2zm0-6h2v4H9V7z" /></svg>`;
-        showResult(`[Error] ${e.message}`);
-    }
-});
+// ========== AUTO-DETECT FUNCTIONALITY ==========
+function autoDetectAndDecode(text) {
+  const guesses = [];
 
-window.addEventListener("DOMContentLoaded", () => {
-    const savedInput = localStorage.getItem("lastInput");
-    const savedOutput = localStorage.getItem("lastOutput");
-    if (savedInput) inputArea.value = savedInput;
-    if (savedOutput) showResult(savedOutput);
-});
+  try { guesses.push(['Base64', base64Decode(text)]); } catch {}
+  try { guesses.push(['Hex', hexDecode(text)]); } catch {}
+  try { guesses.push(['Binary', binaryDecode(text)]); } catch {}
+  try { guesses.push(['Rot13', rot13(text)]); } catch {}
+
+  return guesses;
+}
+
+// ========== EVENT BINDINGS ==========
+encodeBtn.addEventListener('click', encodeHandler);
+decodeBtn.addEventListener('click', decodeHandler);
+copyBtn.addEventListener('click', copyToClipboard);
+
+// ========== INITIALIZATION ==========
+showStatus('Ready to encode/decode. Choose your method ⚔️');
+showLoader(false);
