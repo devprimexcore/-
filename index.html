@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Encrypt and decrypt text using powerful algorithms like Base64, AES, SHA-256, ROT13, and more.">
+  <meta name="description" content="Encrypt and decrypt text using powerful algorithms like Base64, ROT13, Hex, Binary, and more.">
   <title>CryptoCore Encryption Suite</title>
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet" />
@@ -12,7 +12,7 @@
 <body>
   <div class="container">
     <header>
-      <h1><i class="fas fa-shield-alt"></i> CryptoCore Encoder & Decoder</h1>
+      <h1><i class="fas fa-user-secret"></i> CryptoCore Encoder & Decoder</h1>
       <p class="subtitle">Encrypt anything. Decrypt everything. Dominate the cipher.</p>
     </header>
 
@@ -23,20 +23,15 @@
         <textarea id="encrypt-input" placeholder="Enter your secret message..."></textarea>
 
         <label for="encrypt-method">Select encryption method:</label>
-        <select id="encrypt-method">
-          <option value="base64">Base64</option>
-          <option value="hex">Hexadecimal</option>
-          <option value="rot13">ROT13</option>
-          <option value="sha256">SHA-256 (Hash)</option>
-          <option value="aes">AES (Password required)</option>
-        </select>
+        <select id="encrypt-method"></select>
 
-        <input type="password" id="aes-password" placeholder="Password (for AES only)" />
+        <input type="password" id="encrypt-password" placeholder="Optional password..." style="display:none;" />
 
         <button id="encrypt-btn"><i class="fas fa-lock"></i> Encrypt</button>
+        <button id="copy-encrypt" class="copy-btn"><i class="fas fa-copy"></i> Copy</button>
 
         <label for="encrypt-result">Result:</label>
-        <textarea id="encrypt-result" placeholder="Your encrypted output..." readonly></textarea>
+        <textarea id="encrypt-result" readonly placeholder="Your encrypted result..."></textarea>
       </section>
 
       <section class="section">
@@ -45,19 +40,15 @@
         <textarea id="decrypt-input" placeholder="Paste encrypted message here..."></textarea>
 
         <label for="decrypt-method">Select decryption method:</label>
-        <select id="decrypt-method">
-          <option value="base64">Base64</option>
-          <option value="hex">Hexadecimal</option>
-          <option value="rot13">ROT13</option>
-          <option value="aes">AES (Password required)</option>
-        </select>
+        <select id="decrypt-method"></select>
 
-        <input type="password" id="decrypt-password" placeholder="Password (for AES only)" />
+        <input type="password" id="decrypt-password" placeholder="Optional password..." style="display:none;" />
 
         <button id="decrypt-btn"><i class="fas fa-unlock-alt"></i> Decrypt</button>
+        <button id="copy-decrypt" class="copy-btn"><i class="fas fa-copy"></i> Copy</button>
 
         <label for="decrypt-result">Result:</label>
-        <textarea id="decrypt-result" placeholder="Decrypted output will appear here..." readonly></textarea>
+        <textarea id="decrypt-result" readonly placeholder="Your decrypted result..."></textarea>
       </section>
     </main>
 
@@ -69,6 +60,7 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
   </script>
+  <script src="extras.js"></script>
   <script src="script.js"></script>
 </body>
-  </html>
+          </html>
