@@ -3,41 +3,61 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🔐 Encoder/Decoder</title>
+  <meta name="description" content="Encrypt and decrypt text using Base64, AES, SHA-256, ROT13, and more." />
+  <title>CryptoCore Encryption Suite</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 <body>
   <div class="container">
-    <h1><i class="fa-solid fa-user-secret"></i> PrimeX Encryption Hub</h1>
+    <header>
+      <h1><i class="fas fa-shield-alt"></i> CryptoCore Encoder & Decoder</h1>
+      <p class="subtitle">Encrypt anything. Decrypt everything. Dominate the cipher.</p>
+    </header>
 
-    <div class="mode-selector">
-      <label for="mode"><i class="fa-solid fa-shuffle"></i> Choose method:</label>
-      <select id="mode">
-        <option value="base64">Base64</option>
-        <option value="rot13">Rot13</option>
-        <option value="reverse">Reverse</option>
-        <option value="hex">Hex</option>
-        <option value="binary">Binary</option>
-      </select>
-    </div>
+    <main>
+      <div class="card">
+        <label for="input-text"><i class="fas fa-font"></i> Enter your text:</label>
+        <textarea id="input-text" placeholder="Enter text to encode or decode..."></textarea>
 
-    <div class="text-areas">
-      <textarea id="input-text" placeholder="Enter your text here..."></textarea>
-      <textarea id="output-text" placeholder="Result will appear here..." readonly></textarea>
-    </div>
+        <label for="mode"><i class="fas fa-cogs"></i> Choose Method:</label>
+        <select id="mode">
+          <option value="base64">Base64</option>
+          <option value="hex">Hex</option>
+          <option value="rot13">ROT13</option>
+          <option value="sha256">SHA-256 (Hash)</option>
+          <option value="aes">AES (Password)</option>
+        </select>
 
-    <div class="buttons">
-      <button id="encode-btn"><i class="fa-solid fa-lock"></i> Encode</button>
-      <button id="decode-btn"><i class="fa-solid fa-unlock"></i> Decode</button>
-      <button id="copy-btn"><i class="fa-solid fa-copy"></i> Copy</button>
-      <span id="loader" class="loader" style="display:none;"></span>
-    </div>
+        <input type="password" id="aes-password" placeholder="AES Password (optional)" />
 
-    <div id="status" class="status">Ready to encode/decode. Choose your method ⚔️</div>
+        <div class="actions">
+          <button id="encode-btn"><i class="fas fa-lock"></i> Encrypt</button>
+          <button id="decode-btn"><i class="fas fa-unlock"></i> Decrypt</button>
+          <button id="auto-detect-btn"><i class="fas fa-magic"></i> Auto Detect</button>
+        </div>
+
+        <label for="output-text"><i class="fas fa-arrow-down"></i> Output:</label>
+        <textarea id="output-text" readonly placeholder="Result will appear here..."></textarea>
+
+        <div class="output-tools">
+          <span id="status"></span>
+          <span id="loader"></span>
+          <button id="copy-btn"><i class="fas fa-copy"></i> Copy</button>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <p>Developed by <a href="https://t.me/notprimex" target="_blank">@notprimex</a> | © <span id="year"></span> CryptoCore™</p>
+    </footer>
   </div>
 
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
   <script src="script.js"></script>
   <script src="extras.js"></script>
 </body>
-  </html>
+          </html>
