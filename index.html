@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Primex Encoder/Decoder</title>
+  <link rel="stylesheet" href="style.css"/>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div class="container">
+    <h1><i class="fas fa-shield-alt"></i> Primex Encoder / Decoder</h1>
+
+    <textarea id="input" placeholder="ادخل كود بايثون هنا..."></textarea>
+
+    <div class="btn-group">
+      <button onclick="base64Encode()"><i class="fas fa-lock"></i> Base64 ⇧</button>
+      <button onclick="base64Decode()"><i class="fas fa-unlock"></i> Base64 ⇩</button>
+      <button onclick="rot13()"><i class="fas fa-random"></i> ROT13</button>
+      <button onclick="reverse()"><i class="fas fa-exchange-alt"></i> Reverse</button>
+      <button onclick="xorEncrypt()"><i class="fas fa-user-secret"></i> XOR ⇧</button>
+      <button onclick="xorDecrypt()"><i class="fas fa-key"></i> XOR ⇩</button>
+    </div>
+
+    <textarea id="output" placeholder="النتيجة تظهر هنا..."></textarea>
+
+    <p class="footer">
+      للتواصل مع المطور: <a href="https://t.me/notprimex" target="_blank">@notprimex</a>
+    </p>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
