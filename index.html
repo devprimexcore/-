@@ -3,64 +3,41 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PrimeX Encryptor</title>
-
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-  <!-- Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Styles -->
+  <title>🔐 Encoder/Decoder</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
   <div class="container">
-    <header>
-      <h1>PrimeX Encryptor</h1>
-      <p class="subtitle">Encrypt & Decrypt using various algorithms</p>
-    </header>
+    <h1><i class="fa-solid fa-user-secret"></i> PrimeX Encryption Hub</h1>
 
-    <div class="section">
-      <h2>Choose Operation</h2>
-      <select id="operation">
-        <option value="encrypt">Encrypt</option>
-        <option value="decrypt">Decrypt</option>
-      </select>
-    </div>
-
-    <div class="section">
-      <h2>Select Method</h2>
-      <select id="method">
+    <div class="mode-selector">
+      <label for="mode"><i class="fa-solid fa-shuffle"></i> Choose method:</label>
+      <select id="mode">
         <option value="base64">Base64</option>
+        <option value="rot13">Rot13</option>
+        <option value="reverse">Reverse</option>
         <option value="hex">Hex</option>
         <option value="binary">Binary</option>
-        <option value="atbash">Atbash</option>
-        <option value="caesar">Caesar Cipher</option>
-        <option value="morse">Morse Code</option>
-        <option value="sha256">SHA-256 (Encrypt only)</option>
       </select>
     </div>
 
-    <div class="section">
-      <h2>Enter Your Text</h2>
-      <textarea id="inputText" rows="5" placeholder="Enter text here..."></textarea>
-      <button onclick="process()">Run</button>
+    <div class="text-areas">
+      <textarea id="input-text" placeholder="Enter your text here..."></textarea>
+      <textarea id="output-text" placeholder="Result will appear here..." readonly></textarea>
     </div>
 
-    <div class="section">
-      <h2>Result</h2>
-      <textarea id="resultArea" rows="4" readonly></textarea>
-      <button class="copy-btn" onclick="copyToClipboard('resultArea')">
-        <i class="fa fa-copy"></i> Copy
-      </button>
+    <div class="buttons">
+      <button id="encode-btn"><i class="fa-solid fa-lock"></i> Encode</button>
+      <button id="decode-btn"><i class="fa-solid fa-unlock"></i> Decode</button>
+      <button id="copy-btn"><i class="fa-solid fa-copy"></i> Copy</button>
+      <span id="loader" class="loader" style="display:none;"></span>
     </div>
 
-    <footer>
-      &copy; 2025 PrimeX Core — All Rights Reserved
-    </footer>
+    <div id="status" class="status">Ready to encode/decode. Choose your method ⚔️</div>
   </div>
 
-  <!-- Scripts -->
-  <script src="extras.js"></script>
   <script src="script.js"></script>
+  <script src="extras.js"></script>
 </body>
   </html>
